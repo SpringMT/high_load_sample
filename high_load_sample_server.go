@@ -18,6 +18,7 @@ func main() {
 	// register hello function to handle all requests
 	server := http.NewServeMux()
 	server.HandleFunc("/", hello)
+  server.HandleFunc("/healthz", health)
 
 	// start the web server on port and accept requests
 	log.Printf("Server listening on port %s", port)
@@ -36,3 +37,8 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Version: 1.0.0\n")
 	fmt.Fprintf(w, "Hostname: %s\n", host)
 }
+
+func health(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "OK")
+}
+
