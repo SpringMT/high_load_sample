@@ -1,10 +1,11 @@
-FROM golang:latest AS builder
+FROM --platform=$BUILDPLATFORM golang:latest AS builder
 WORKDIR /tmp
 COPY ./high_load_sample_server.go /tmp
-RUN GOOS=linux GOARCH=arm64 go build -a -o high_load_sample_server high_load_sample_server.go
+ARG TARGETOS TARGETARCH
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go build -a -o high_load_sample_server high_load_sample_server.go
 
-FROM arm64v8/alpine:latest
-COPY --from=builder /tmp/high_load_sample_server ./
-RUN chmod +x high_load_sample_server
-CMD ["./high_load_sample_server"]
+FROM alpine:latest
+WORKDIR /
+COPY --from=builder /tmp/high_load_sample_server /bin/
+CMD ["/bin/high_load_sample_server"]
 
